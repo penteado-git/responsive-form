@@ -1,42 +1,72 @@
-const multiStepForm = document.querySelector("[data-multi-step]");
-const formSteps = [...multiStepForm.querySelectorAll("[data-step]")];
-let currentStep = formSteps.findIndex((step) => {
-  return step.classList.contains("active");
-});
+const doc = document.querySelector.bind(document);
 
-if (currentStep < 0) {
-  currentStep = 0;
-  showCurrentStep();
+const html = {
+  links: [...doc(".step-title").children],
+  content: [...doc(".formArea").children],
+  final: doc(".final"),
+  openStep: doc("[data-open]"),
+  btn: [...doc(".btn").children],
+  btns: [...doc(".btns").children],
+};
+
+function validateCPF() {
+  const cpf = doc("#cpf").value;
+  let regex = /^\d{3}\.\d{3}\.\d{3}\-\d{2}$/;
+  try {
+    if (!regex.test(cpf) || cpf === "") throw new Error();
+  } catch (Error) {
+    return;
+  }
+  validateDate();
 }
 
-multiStepForm.addEventListener("click", (e) => {
-  let incrementor;
-  if (e.target.matches("[data-next]")) {
-    incrementor = 1;
-  } else if (e.target.matches("[data-previous]")) {
-    incrementor = -1;
+function validateDate() {
+  const dtNasc = doc("#dtNasc").value;
+  if (dtNasc == "") {
+    alert("Insira a data de nascimento");
+    return;
   }
+  showCurrentStep("adress");
+  show();
+}
 
-  if (incrementor == null) return;
-
-  const inputs = [...formSteps[currentStep].querySelectorAll("input")];
-  const allValid = inputs.every((input) => input.reportValidity());
-  if (allValid) {
-    currentStep += incrementor;
-    showCurrentStep();
-  }
-});
-
-formSteps.forEach((step) => {
-  step.addEventListener("animationend", (e) => {
-    formSteps[currentStep].classList.remove("hide");
-    e.target.classList.toggle("hide", !e.target.classList.contains("active"));
+function hideAllStepContent() {
+  html.content.forEach((step) => {
+    step.style.display = "none";
   });
-});
+}
 
-function showCurrentStep() {
-  formSteps.forEach((step, index) => {
-    step.classList.toggle("active", index === currentStep);
+function removeAllActiveStep() {
+  html.links.forEach((step) => {
+    step.className = step.className.replace("active", "");
+  });
+}
+
+function showCurrentStep(id) {
+  hideAllStepContent();
+
+  const stepContent = doc("#" + id);
+  stepContent.style.display = "block";
+
+  id.className += "active";
+}
+
+function selectStep(event) {
+  removeAllActiveStep();
+
+  const select = event.currentTarget;
+  showCurrentStep(select.dataset.id);
+
+  select.className += "active";
+}
+
+function listenForChanges() {
+  html.links.forEach((step) => {
+    step.addEventListener("click", selectStep);
+  });
+
+  html.btns.forEach((click) => {
+    click.addEventListener("click", selectStep);
   });
 }
 
@@ -59,22 +89,44 @@ function mascaraCpf(mascara, input) {
   }
 }
 
-function endereço() {
-  var cep = document.getElementById("cep");
-  var url = "http://viacep.com.br/ws/" + cep.value + "/json/";
+function consultCEP() {
+  const cep = doc("#cep").value;
 
-  var bairro = document.getElementById("bairro");
-  var logradouro = document.getElementById("logradouro");
+  if (cep.length != 8 || cep === "") {
+    alert("CEP inválido");
+    return;
+  } else var url = "https://viacep.com.br/ws/" + cep + "/json/";
+  $.getJSON(url, function (data) {
+    $("#rua").val(data.logradouro);
+    $("#bairro").val(data.bairro);
+    $("#number").val(data.number);
 
-  fetch(url, { method: "GET" }).then((response) => {
-    response.json().then((data) => {
-      logradouro.value = data.logradouro;
-      bairro.value = data.bairro;
+    fetch(url).then(function (response) {
+      response.json().then(function (data) {
+        showResult(data);
+      });
     });
   });
 }
 
-function resultado() {
-  let nome = document.getElementById("nome").value;
-  console.log("Nome: " + nome);
+function show() {
+  let name = doc("#nome").value;
+  let dtNasc = doc("#dtNasc").value;
+  let cpf = doc("#cpf").value;
+  html.final.innerHTML += `<p>Nome: ${name}<\p>
+                                <p>Data de Nascimento: ${dtNasc}<\P>
+                                <p>CPF: ${cpf}<\P>`;
 }
+function showResult(data) {
+  html.final.innerHTML += `<p>${data.logradouro}<\p>
+                                <p>Bairro: ${data.bairro}<\p>
+                                <p>Cidade: ${data.localidade}<\p>`;
+}
+
+function start() {
+  hideAllStepContent();
+  listenForChanges();
+  html.openStep.click();
+}
+
+start();
