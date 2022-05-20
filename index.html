@@ -1,72 +1,73 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Formulario</title>
-    <link rel="stylesheet" href="styles.css" />
-    <script src="script.js" defer></script>
+    <link rel="stylesheet" href="style.css" />
+    <title>Formulário</title>
   </head>
   <body>
-    <form data-multi-step class="multi-step-form">
-      <div class="card" data-step>
-        <h3 class="step-title">Dados pessoais:</h3>
-        <div class="form-group">
-          <label for="nome">Nome:</label>
-          <input type="text" name="nome" id="nome" />
-        </div>
-        <div class="form-group">
-          <label for="data">Data de nascimento:</label>
-          <input type="date" name="data" id="date" />
-        </div>
-        <div class="form-group">
-          <label for="CPF">CPF:</label>
-          <input
-            type="text"
-            name="CPF"
-            id="CPF"
-            autocomplete="off"
-            onkeyup="mascaraCpf('###.###.###-##', this)"
-          />
-        </div>
-        <button type="button" data-next>Avançar</button>
+    <div class="form-group">
+      <div class="step-title">
+        <button data-id="data" data-open>Dados</button>
+        <button data-id="adress">Endereço</button>
+        <button data-id="final">Finalização</button>
       </div>
-      <div class="card" data-step>
-        <h3 class="step-title">Endereço</h3>
-        <div class="form-group">
-          <label for="CEP">CEP:</label>
-          <input type="text" id="cep" placeholder="Digite seu cep..." />
-          <button onclick="endereço()">Obter endereço</button>
-          <label for="Logradouro">Logradouro</label>
-          <input type="text" id="logradouro" />
-        </div>
-        <div class="form-group">
-          <label for="Bairro">Bairro:</label>
-          <input type="text" id="bairro" />
-        </div>
-        <div class="form-group">
-          Número* <input type="number" id="numero" />
-        </div>
-        <button type="button" data-previous>Anterior</button>
-        <button type="button" data-next>Avançar</button>
-      </div>
-      <section class="card" data-step>
-        <h3 class="step-title">Obrigado por se cadastrar!</h3>
-        <h4>Seus dados:</h4>
-        <h5>Nome: </h5>
-        <h5>CPF: </h5>
-        <h5>Data: </h5>
 
-        <h5>Endereço: </h5>
-
-        <div class="form-group" id="final"></div>
+      <div class="formArea">
+        <section class="form-group" id="data">
+          <form method="post" name="forms">
+            <h3>Dados pessoais:</h3>
+              <label for="nome">Nome:</label>
+                <input type="text" id="nome" />
+      <div class="formArea">
+              <label for="data">Data de nascimento:</label>
+                <input type="date" id="dtNasc" placeholder="00/00/0000" /><br>
+              <label for="CPF">CPF:</label>
+                <input type="text" id="cpf" autocomplete="off"
+            onkeyup="mascaraCpf('###.###.###-##', this)"  />
+      <div class="btn">
+              <button type="button" data-id="adress" onclick="validateCPF()">
+                Avançar 
+              </button>
+            </div>
+          </form>
+        </section>
+        <section class="form-group" id="adress">
+          <form method="get" name="form-group" action=".">
+            <br />
+            <h3>Endereço:</h3>
+            <label for="CEP">CEP:</label><br>
+            <input
+                type="text"
+                id="cep"
+                placeholder="Digite seu CEP"
+                onchange="consultCEP()" /></label
+            ><br /><br />
+            <label for="Logradouro">Logradouro:</label><br />
+            <input type="text" id="rua" /><br />
+            <label for="Bairro">Bairro:</label><br />
+            <input type="text" id="bairro" /><br />
+            <label for="Número" >Número: </label> <br />
+            <input type="number" id="number" />
+            <div class="btns">
+              <button type="button" id="btnBack" data-id="data"> Voltar </button>
+              <button type="button" id="btnNext" data-id="final">
+                Avançar 
+              </button>
+            </div>
+          </form>
+        </section>
+        <section class="paginaFinal" id="final">
+          <h2 id="h2">Obrigado por se cadastrar!</h2>
+          <div class="final"><b>Seus Dados:</b></div>
+        </section>
       </div>
-    <script>
-      
-    </script>
-      <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-      <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    </form>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="scripts.js"></script>
   </body>
 </html>
