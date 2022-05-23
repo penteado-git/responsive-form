@@ -23,8 +23,8 @@ function isCPF(numCpf = 0) {
   soma += cpf[8] * 2;
   soma = (soma * 10) % 11;
   if (soma == 10 || soma == 11) soma = 0;
-
-  console.log("Primeiro digito : " + soma);
+  
+  alert("CPF Válido");
   if (soma != cpf[9]) return false;
 
   soma = 0;
@@ -41,9 +41,9 @@ function isCPF(numCpf = 0) {
   soma = (soma * 10) % 11;
   if (soma == 10 || soma == 11) soma = 0;
 
+  alert("CPF Inválido");
   if (soma != cpf[10]) return false;
 
-  console.log("Segundo digito : " + soma);
   return true;
 }
 
