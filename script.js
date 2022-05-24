@@ -7,14 +7,18 @@ const html = {
   openStep: doc("[data-open]"),
   btn: [...doc(".btn").children],
   btns: [...doc(".btns").children],
+  separt: doc(".separt"),
 };
 
 function isCPF() {
   var cpf = doc("#cpf").value;
   cpf = cpf.replace(/[^\d]+/g, "");
-  if (cpf == "") return false;
+  if (cpf == "") {
+    alert("Digite o CPF.");
+  }
+
   if (
-    cpf.length != 11 ||
+    cpf.length > 11 ||
     cpf == "00000000000" ||
     cpf == "11111111111" ||
     cpf == "22222222222" ||
@@ -32,13 +36,14 @@ function isCPF() {
   for (i = 0; i < 9; i++) count += parseInt(cpf.charAt(i)) * (10 - i);
   dig = 11 - (count % 11);
   if (dig == 10 || dig == 11) dig = 0;
-  if (dig != parseInt(cpf.charAt(9))) return false;
+  if (dig != parseInt(cpf.charAt(9))) alert("CPF Inválido");
   count = 0;
   for (i = 0; i < 10; i++) count += parseInt(cpf.charAt(i)) * (11 - i);
   dig = 11 - (count % 11);
   if (dig == 10 || dig == 11) dig = 0;
   if (dig != parseInt(cpf.charAt(10))) return false;
   validateCPF();
+  alert("CPF Válido");
   return true;
 }
 
@@ -51,6 +56,16 @@ function validateCPF() {
     return;
   }
   validateDate();
+  validaName();
+}
+
+function validaName() {
+  nome = doc("#nome").value;
+  if (nome === "") {
+    alert("Insira seu nome");
+    nome.focus();
+  }
+  localStorage.setItem("nome", nome);
 }
 
 function validateDate() {
@@ -60,7 +75,7 @@ function validateDate() {
     return;
   }
   showCurrentStep("adress");
-  show();
+  showFinal();
 }
 
 function hideAllStepContent() {
@@ -82,6 +97,9 @@ function showCurrentStep(id) {
   stepContent.style.display = "block";
 
   id.className += "active";
+  if (id === "final") {
+    show();
+  }
 }
 
 function selectStep(event) {
@@ -133,32 +151,39 @@ function consultCEP() {
     $("#rua").val(data.logradouro);
     $("#bairro").val(data.bairro);
     $("#number").val(data.number);
-
-    fetch(url).then(function (response) {
-      response.json().then(function (data) {
-        showResult(data);
-      });
-    });
+    localStorage.setItem("rua", data.logradouro);
+    localStorage.setItem("bairro", data.bairro);
+    localStorage.setItem("cidade", data.localidade);
   });
 }
 
-function show() {
+function showFinal() {
   let name = doc("#nome").value;
   let dtNasc = doc("#dtNasc").value;
   let cpf = doc("#cpf").value;
-  html.final.innerHTML += `<p>Nome: ${name}<\p>
-                                <p>Data de Nascimento: ${dtNasc}<\P>
-                                <p>CPF: ${cpf}<\P>`;
+  html.final.innerHTML = `<p>Nome: ${name}<\p>
+                          <p>Data de Nascimento: ${dtNasc}<\P>
+                          <p>CPF: ${cpf}<\P>`;
 }
-function showResult(data) {
-  html.final.innerHTML += `<p>${data.logradouro}<\p>
-                                <p>Bairro: ${data.bairro}<\p>
-                                <p>Cidade: ${data.localidade}<\p>`;
+function show() {
+  html.separt.innerHTML = `<p>${localStorage.getItem(
+    "rua",
+    data.logradouro
+  )}<\p>
+                          <p>Bairro: ${localStorage.getItem(
+                            "bairro",
+                            data.bairro
+                          )}<\p>
+                          <p>Cidade: ${localStorage.getItem(
+                            "cidade",
+                            data.localidade
+                          )}<\p>`;
 }
 
 function start() {
   hideAllStepContent();
   listenForChanges();
+  localStorage.clear();
   html.openStep.click();
 }
 
