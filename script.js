@@ -187,3 +187,7 @@ function start() {
   hideAllStepContent();
   listenForChanges();
   localStorage.clear();
+  html.openStep.addEventListener("click", selectStep);
+}
+
+start();
